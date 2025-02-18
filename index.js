@@ -7,15 +7,16 @@ const cors = require('cors')
 
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const { send } = require('process')
 
 const server = express()
 server.use(express.json())
 server.use(cors())
 
-const dbPath = process.env.DBPATH || path.join(__dirname,'expenseflow.db');
-const HOST = process.env.HOST || 'localhost'
-const PORT = process.env.PORT || 8080;
+const dbPath = process.env.DBPATH 
+    ? path.resolve(process.env.DBPATH)  // Convert relative to absolute path
+    : path.join(__dirname, 'expenseflow.db');
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8080'
+const PORT = process.env.PORT || 8080
 const SECRET_KEY = process.env.JWT_SECRET_KEY || 'awsedrftgyhujikolpqzmxncbv1470963258';
 
 let db;
@@ -47,7 +48,7 @@ const initializeServer = async () => {
             );
         `);
         // res.send('Hello User, Welcome to ExpenseFlow Server.')
-        server.listen(PORT, () => console.log(`Server running at ${HOST}:${PORT}`))
+        server.listen(PORT, () => console.log(`Server running at ${BASE_URL}`))
     } catch(e) {
         console.log('SERVER STOPPED')
         console.error('ERROR: ', e.message)
