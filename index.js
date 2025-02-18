@@ -7,6 +7,7 @@ const cors = require('cors')
 
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const { send } = require('process')
 
 const server = express()
 server.use(express.json())
@@ -45,6 +46,7 @@ const initializeServer = async () => {
                 FOREIGN KEY (user_id) REFERENCES users(id)
             );
         `);
+        // res.send('Hello User, Welcome to ExpenseFlow Server.')
         server.listen(PORT, () => console.log(`Server running at ${HOST}:${PORT}`))
     } catch(e) {
         console.log('SERVER STOPPED')
@@ -54,6 +56,10 @@ const initializeServer = async () => {
 }
 
 initializeServer()
+
+server.get('/', async(req, res) => {
+    res.send('Hello User, Welcome to ExpenseFlow Server.')
+})
 
 // User Registration
 server.post('/signup', async(req,res) => {
