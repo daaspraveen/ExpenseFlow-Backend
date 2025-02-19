@@ -78,18 +78,22 @@ server.post('/signup', async(req,res) => {
 })
 
 // User Login
-server.post('/login', async(req,res) => {
-    const {email, password} = req.body;
-    const userDetails = await db.get(`
-        SELECT * FROM users
-            WHERE email = ?
-        `,[email])
-    const checkPassword = await bcrypt.compare(password, userDetails.password)
-    if (userDetails && checkPassword) {
-        const token = jwt.sign({userId: userDetails.id},SECRET_KEY,{expiresIn: '3h', algorithm: 'HS256'});
-        res.json({'username': userDetails.username,'jwt_token': token})
-    } else {
-        res.status(401).send('Invalid Credentials')
+server.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const userDetails = await db.get(`SELECT * FROM users WHERE email = ?`, [email]);
+        if (!userDetails) {
+            return res.status(401).json({ error: 'User Account Not Exists.' });
+        }
+        const checkPassword = await bcrypt.compare(password, userDetails.password);
+        if (!checkPassword) {
+            return res.status(401).json({ error: 'Incorrect Password, Try Again' });
+        }
+        const token = jwt.sign({ userId: userDetails.id }, SECRET_KEY, { expiresIn: '3h', algorithm: 'HS256' });
+        return res.json({ username: userDetails.username, jwt_token: token });
+    } catch (error) {
+        console.error("Error during login:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
