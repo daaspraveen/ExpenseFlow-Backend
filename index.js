@@ -73,7 +73,7 @@ server.post('/signup', async(req,res) => {
             `,[username,email,hashedPassword]);
         res.status(201).send('User Registered Successfully');
     } catch (e) {
-        res.status(400).send('User Email already exists');
+        res.status(400).send('User Account already exists');
     }
 })
 
