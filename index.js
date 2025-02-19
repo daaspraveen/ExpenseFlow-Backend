@@ -12,7 +12,7 @@ const server = express()
 server.use(express.json())
 server.use(cors())
 
-const dbPath = process.env.DBPATH 
+const dbPath = process.env.DBPATH
     ? path.resolve(process.env.DBPATH)  // Convert relative to absolute path
     : path.join(__dirname, 'expenseflow.db');
 const BASE_URL = process.env.BASE_URL || 'http://localhost:8080'
@@ -73,7 +73,7 @@ server.post('/signup', async(req,res) => {
             `,[username,email,hashedPassword]);
         res.status(201).send('User Registered Successfully');
     } catch (e) {
-        res.status(400).send('Username already exists');
+        res.status(400).send('User Email already exists');
     }
 })
 
@@ -87,7 +87,7 @@ server.post('/login', async(req,res) => {
     const checkPassword = await bcrypt.compare(password, userDetails.password)
     if (userDetails && checkPassword) {
         const token = jwt.sign({userId: userDetails.id},SECRET_KEY,{expiresIn: '3h', algorithm: 'HS256'});
-        res.json({'jwt_token': token})
+        res.json({'username': userDetails.username,'jwt_token': token})
     } else {
         res.status(401).send('Invalid Credentials')
     }
